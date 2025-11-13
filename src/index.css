@@ -1,3 +1,4 @@
+/* ====== original base (kept) ====== */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,3 +12,134 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ====== light polish (new) ====== */
+:root {
+  --ink:#222;
+  --muted:#7a7a7a;
+  --accent:#f4f4f4;
+  --border:#dedede;
+  --bg:#fafafa;
+}
+
+html, body, #root { height: 100%; background: var(--bg); color: var(--ink); }
+* { box-sizing: border-box; }
+
+.page { padding: 16px; max-width: 1000px; margin: 0 auto; }
+
+/* Header + New Game */
+.header { display: flex; justify-content: center; margin: 8px 0 10px; }
+.newGameBtn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: background .15s ease, transform .06s ease, box-shadow .15s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,.05);
+}
+.newGameBtn:hover { background: var(--accent); }
+.newGameBtn:active { transform: translateY(1px); }
+
+/* 3-column board (Left: letters, Center: game, Right: lives) */
+.board {
+  display: grid;
+  grid-template-columns: 220px 1fr 160px;
+  gap: 16px;
+  align-items: start;
+}
+.left, .right {
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  min-height: 160px;
+}
+.center { text-align: center; }
+
+/* Title + figure */
+.title { margin: 8px 0 4px; font-weight: 700; }
+.figure { width: 100%; max-width: 380px; height: 220px; margin: 8px auto 0; display: block; }
+.stroke { stroke: #222; stroke-width: 4; fill: none; stroke-linecap: round; }
+
+/* Masked word */
+.wordDisplay {
+  margin: 18px auto 8px;
+  letter-spacing: .35em;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+/* Input + Guess button */
+.controls { display: flex; justify-content: center; gap: 8px; align-items: center; margin-top: 8px; }
+.label { display: flex; gap: 8px; align-items: center; }
+.guessInput {
+  width: 60px;
+  padding: 8px;
+  font-size: 18px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+}
+.guessBtn {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: background .15s ease, transform .06s ease;
+}
+.guessBtn:hover { background: var(--accent); }
+.guessBtn:active { transform: translateY(1px); }
+
+/* Letters guessed + missed */
+.lettersBox { display: flex; flex-direction: column; gap: 8px; }
+.lettersTitle { font-weight: 700; }
+.lettersTitle.sub { font-weight: 600; margin-top: 6px; }
+.lettersList { display: flex; gap: 6px; flex-wrap: wrap; }
+.letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  margin: 3px;
+  min-width: 28px;
+  height: 32px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: #fff;
+  color: #222;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  transition: transform .06s ease, box-shadow .15s ease;
+  user-select: none;
+}
+.letter:hover { transform: translateY(-1px); }
+.letter.wrong { border-color: #e6aaaa; color: #b33; background: #fff0f0; }
+.muted { color: var(--muted); }
+
+/* Lives panel */
+.livesBox { text-align: center; }
+.livesLabel { font-weight: 700; margin-bottom: 6px; }
+.livesNum { font-size: 40px; font-weight: 800; }
+
+/* Win/Lose popup */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.25);
+  display: grid; place-items: center;
+}
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  width: min(90vw, 420px);
+  text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+.reveal { color: var(--muted); }
