@@ -1,4 +1,3 @@
-// src/App.test.js
 import React from "react";
 
 test("App placeholder test passes", () => {
