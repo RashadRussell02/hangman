@@ -15,4 +15,12 @@ This is a React-based Hangman game where players guess letters to complete a wor
    git clone https://github.com/YOUR-USERNAME/hangman.git
    cd hangman
 
+## Running Tests
+
+This project uses Jest and React Testing Library.
+
+1. Install dependencies:
+
+   ```bash
+   npm install
 
