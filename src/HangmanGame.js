@@ -32,28 +32,35 @@ class HangmanGame extends React.Component {
     lifeLeft: 0,
     usedLetters: [],
     gameStatus: "idle",
+
+    // NEW for player login + stats
     playerName: "",
+    playerStats: null,
+    isLoggedIn: false,
   };
 
-  // ✅ UPDATED: allow tests to inject initialWord
   componentDidMount() {
     const { initialWord } = this.props;
+    if (initialWord) this.setState({ wordList: [initialWord] });
+    else this.setState({ wordList: words });
+  }
 
-    if (initialWord) {
-      this.setState({ wordList: [initialWord] });
-    } else {
-      this.setState({ wordList: words });
+  // 📌 Detect win/loss and update stats
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.gameStatus !== this.state.gameStatus) {
+      if (this.state.gameStatus === "won") {
+        this.updateStats(true);
+      }
+      if (this.state.gameStatus === "lost") {
+        this.updateStats(false);
+      }
     }
   }
 
-  getPlayerName = (name) => {
-    this.setState({ playerName: name });
-  };
-
+  // 🎮 Start a new game
   startNewGame = () => {
     const { wordList } = this.state;
     if (!wordList || !wordList.length) return;
-
     this.setState({
       curWord: Math.floor(Math.random() * wordList.length),
       lifeLeft: 0,
@@ -62,6 +69,7 @@ class HangmanGame extends React.Component {
     });
   };
 
+  // 💻 Handle one letter guess
   onGuess = (raw) => {
     const { gameStatus, usedLetters, lifeLeft } = this.state;
     if (gameStatus !== "playing") return;
@@ -93,6 +101,58 @@ class HangmanGame extends React.Component {
     }
   };
 
+  // ====================== DB/LOGIN AREA ========================
+
+  API_URL = "http://localhost:4000";
+
+  // 🧾 Save stats when win/loss happens
+  updateStats = async (didWin) => {
+    if (!this.state.isLoggedIn || !this.state.playerStats) return;
+
+    const { playerName, playerStats } = this.state;
+    const updated = {
+      wins: playerStats.wins + (didWin ? 1 : 0),
+      losses: playerStats.losses + (didWin ? 0 : 1),
+    };
+
+    this.setState({ playerStats: { ...playerStats, ...updated } });
+
+    try {
+      await fetch(`${this.API_URL}/players`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerName, ...updated }),
+      });
+    } catch (err) {
+      console.error("Update failed", err);
+    }
+  };
+
+  // 🎟 Login or create player
+  loginPlayer = async () => {
+    const { playerName } = this.state;
+    if (!playerName) return;
+
+    try {
+      // Try GET
+      let res = await fetch(`${this.API_URL}/players?playerName=${playerName}`);
+      if (res.status === 404) {
+        // Create POST if not found
+        res = await fetch(`${this.API_URL}/players`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ playerName }),
+        });
+      }
+      const data = await res.json();
+      this.setState({ playerStats: data, isLoggedIn: true });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ===================== HELPER UTILS ===========================
+
   currentWord = () => {
     const { wordList, curWord } = this.state;
     return wordList && wordList.length ? wordList[curWord] || "" : "";
@@ -104,10 +164,7 @@ class HangmanGame extends React.Component {
   maskedWord = (word, used) =>
     word
       .split("")
-      .map((ch) => {
-        if (!/[a-z]/i.test(ch)) return ch;
-        return used.includes(ch.toLowerCase()) ? ch : "_";
-      })
+      .map((ch) => (!/[a-z]/i.test(ch) ? ch : used.includes(ch.toLowerCase()) ? ch : "_"))
       .join(" ");
 
   correctLetters = (word, used) => {
@@ -120,8 +177,11 @@ class HangmanGame extends React.Component {
     return used.filter((l) => !set.has(l));
   };
 
+  // ======================== RENDER UI ============================
+
   render() {
-    const { lifeLeft, usedLetters, gameStatus } = this.state;
+    const { lifeLeft, usedLetters, gameStatus, playerName, playerStats, isLoggedIn } =
+      this.state;
 
     const word = this.currentWord();
     const correct = this.correctLetters(word, usedLetters);
@@ -142,24 +202,50 @@ class HangmanGame extends React.Component {
           </button>
         </header>
 
+        {/* 🧍 Login UI */}
+        {!isLoggedIn && (
+          <div style={{ margin: "12px auto", textAlign: "center" }}>
+            <input
+              placeholder="Enter name..."
+              value={playerName}
+              onChange={(e) => this.setState({ playerName: e.target.value })}
+            />
+            <button onClick={this.loginPlayer} style={{ marginLeft: "8px" }}>
+              Login
+            </button>
+          </div>
+        )}
+
+        {/* 👤 Player Stats */}
+        {isLoggedIn && playerStats && (
+          <div style={{ textAlign: "center", margin: "8px", fontSize: "18px" }}>
+            <strong>{playerName}</strong> — Wins: {playerStats.wins} | Losses:{" "}
+            {playerStats.losses} | Win %:{" "}
+            {playerStats.wins + playerStats.losses === 0
+              ? 0
+              : Math.round(
+                  (playerStats.wins /
+                    (playerStats.wins + playerStats.losses)) *
+                    100
+                )}
+            %
+          </div>
+        )}
+
         <div className="board">
           <aside className="left">
             <div className="lettersBox">
               <div className="lettersTitle">Letters Guessed</div>
               <div className="lettersList">
                 {correct.length
-                  ? correct.map((c) => (
-                      <LetterBox key={`c-${c}`} letter={c} isVisible />
-                    ))
+                  ? correct.map((c) => <LetterBox key={`c-${c}`} letter={c} isVisible />)
                   : <span className="muted">—</span>}
               </div>
 
               <div className="lettersTitle sub">Missed</div>
               <div className="lettersList">
                 {wrong.length
-                  ? wrong.map((c) => (
-                      <LetterBox key={`w-${c}`} letter={c} isVisible wrong />
-                    ))
+                  ? wrong.map((c) => <LetterBox key={`w-${c}`} letter={c} isVisible wrong />)
                   : <span className="muted">—</span>}
               </div>
             </div>
@@ -168,31 +254,19 @@ class HangmanGame extends React.Component {
           <main className="center">
             <h1 className="title">Hangman</h1>
 
-            <img
-              src={imgSrc}
-              alt="hangman"
-              style={{ maxWidth: "380px", margin: "8px auto", display: "block" }}
-            />
+            <img src={imgSrc} alt="hangman" style={{ maxWidth: "380px", margin: "8px auto", display: "block" }}/>
 
-            {/* masked word */}
             <div className="wordDisplay" data-testid="masked-word">
               {masked}
             </div>
 
-            <SingleLetterSearchBar
-              onGuess={this.onGuess}
-              disabled={gameStatus !== "playing"}
-            />
+            <SingleLetterSearchBar onGuess={this.onGuess} disabled={gameStatus !== "playing"} />
           </main>
 
           <aside className="right">
             <div className="livesBox">
               <div className="livesLabel">Lives Left</div>
-
-              {/* ✅ UPDATED: added data-testid="lives-num" */}
-              <div className="livesNum" data-testid="lives-num">
-                {livesRemaining}
-              </div>
+              <div className="livesNum" data-testid="lives-num">{livesRemaining}</div>
             </div>
           </aside>
         </div>

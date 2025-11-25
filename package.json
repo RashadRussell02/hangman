@@ -1,14 +1,19 @@
-{
+
   "name": "hangman",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.936.0",
+    "@aws-sdk/lib-dynamodb": "^3.936.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-scripts": "^5.0.1",
+    "react-scripts": "^0.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -38,5 +43,18 @@
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
     "jest": "^27.5.1"
-  }
+  },
+  "description": "## Overview This is a React-based Hangman game where players guess letters to complete a word. Each wrong guess draws a new part of the hangman until the game is over.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RashadRussell02/hangman.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RashadRussell02/hangman/issues"
+  },
+  "homepage": "https://github.com/RashadRussell02/hangman#readme"
 }
