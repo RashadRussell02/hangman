@@ -13,7 +13,7 @@
     "express": "^5.1.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-scripts": "^5.0.1",
+    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -56,5 +56,14 @@
   "bugs": {
     "url": "https://github.com/RashadRussell02/hangman/issues"
   },
-  "homepage": "https://github.com/RashadRussell02/hangman#readme"
+  "homepage": ".",
+  "engines": {
+    "node": "18.x"
+  },
+  "overrides": {
+    "babel-loader": "8.2.5",
+    "schema-utils": "3.3.0",
+    "ajv": "6.12.6",
+    "ajv-keywords": "3.5.2"
+  }
 }
