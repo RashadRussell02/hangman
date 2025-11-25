@@ -10,13 +10,13 @@ app.use(express.json());
 // Connect to DynamoDB Local
 const client = new DynamoDBClient({
   region: "us-east-1",
-  endpoint: "http://localhost:8000" // VERY IMPORTANT
+  endpoint: process.env.DYNAMO_ENDPOINT || "http://localhost:8000"
 });
 const ddb = DynamoDBDocumentClient.from(client);
 
 const TABLE = "Players";
 
-// POST → Create a new player
+// POST - Create a new player
 app.post("/players", async (req, res) => {
   try {
     const { playerName } = req.body;
@@ -33,7 +33,7 @@ app.post("/players", async (req, res) => {
   }
 });
 
-// GET → Retrieve a player
+// GET - Retrieve a player
 app.get("/players", async (req, res) => {
   try {
     const { playerName } = req.query;
@@ -51,7 +51,7 @@ app.get("/players", async (req, res) => {
   }
 });
 
-// PUT → Update wins and losses
+// PUT - Update wins and losses
 app.put("/players", async (req, res) => {
   try {
     const { playerName, wins, losses } = req.body;
@@ -73,4 +73,4 @@ app.put("/players", async (req, res) => {
 
 // Start the API Server
 const PORT = 4000;
-app.listen(PORT, () => console.log(`API running on port ${PORT}`));
+app.listen(PORT, function() { console.log("API running on port " + PORT); });

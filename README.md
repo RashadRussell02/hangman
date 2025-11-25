@@ -11,41 +11,44 @@ This is a React-based Hangman game where players guess letters to complete a wor
 
 ## How to Run
 1. Clone the repo:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/hangman.git
+   git clone https://github.com/RashadRussell02/hangman.git
    cd hangman
-   ```
 
-2. Use Node 18 for compatibility:
-
-   ```bash
+2. Use Node 18 (required):
    nvm install 18
    nvm use 18
-   ```
-3. Install dependencies and start the app:
 
-   ```bash
-   npm install
+3. Install dependencies and start the app:
+   npm ci
    npm start
-   ```
+
+## Running with Docker
+
+1. Make sure Docker is installed and running
+
+2. Start all services (React app, API server, DynamoDB):
+   docker-compose up --build
+
+3. Access the app:
+   - React UI: http://localhost:3000
+   - API Server: http://localhost:4000
+   - DynamoDB Admin: http://localhost:8001
+
+4. To stop:
+   docker-compose down
 
 ## Running Tests
 
 This project uses Jest and React Testing Library.
 
-1. Install dependencies:
+1. Install dependencies (if not already done):
+   npm ci
 
-   ```bash
-   npm install
-   ```
 2. Run all tests:
-
-   ```bash
    npm test
-   ```
 
 ## Test Run Video
 
 Here is the required screen recording showing my unit tests running and passing:
 
-👉 [https://drive.google.com/](https://drive.google.com/file/d/169z9sDCabQtWVEDP9rxIfRTv4iH3PJyD/view?usp=share_link)
+https://drive.google.com/file/d/169z9sDCabQtWVEDP9rxIfRTv4iH3PJyD/view?usp=share_link
